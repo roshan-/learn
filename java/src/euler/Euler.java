@@ -10,13 +10,41 @@ import util.Result;
 public class Euler {
 
     private Euler() {}; // Static functions
+
+    public static Result getNthPrimeSimple(int n) {
+        long startTime= System.nanoTime();
+        int currentPrime= 2;
+        int primesFound= 1;
+        do {
+            boolean nextPrimeFound= false;
+
+            do {
+                int i=2;
+                currentPrime++;
+                boolean foundDivisor= false;
+                while(i<currentPrime) {
+                    if (currentPrime % i == 0) {
+                        foundDivisor= true;
+                        break;
+                    }
+                    i++;
+                }
+                if (!foundDivisor) {
+                    nextPrimeFound= true;
+                    primesFound++;
+                }
+            } while (!nextPrimeFound);
+
+        } while (primesFound < n);
+        return new Result(currentPrime, System.nanoTime()-startTime);
+    }
+
     public static Result getNthPrime(int n) {
         long startTime= System.nanoTime();
-        int primesFound= 2;
-        long currentPrime= 3;
+        int primesFound= 1;
+        long currentPrime= 2;
         Result[] results= new Result[n];
         results[0]= new Result(2, System.nanoTime()-startTime);
-        results[1]= new Result(currentPrime, System.nanoTime()-startTime);
 
         do {
             boolean nextPrimeFound= false;
@@ -59,8 +87,15 @@ public class Euler {
         System.out.printf("%dth prime : %d, time:%,d%n",n, result.getResult(), result.getTimeToCompute());
     }
 
+    public static void solveNthPrimeSimple() {
+        int n=10001;
+        Result result= Euler.getNthPrimeSimple(n);
+        System.out.printf("%dth prime : %d, time:%,d%n",n, result.getResult(), result.getTimeToCompute());
+    }
+
     public static void main(String[] args) {
-        solveNthPrime();                          // 007
+        //solveNthPrime();                          // 007
+        solveNthPrimeSimple();                         // 007
         //getLargeSum();                              // 013
     }
 
