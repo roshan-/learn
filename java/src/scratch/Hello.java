@@ -1,7 +1,7 @@
 package scratch;
 
 /**
- * Created by rdiwakar on 4/15/2017.
+ * To itch a scratch
  */
 public class Hello {
     public static void main(String[] args) {
