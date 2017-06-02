@@ -1,0 +1,100 @@
+package util;
+import java.util.Arrays;
+import java.util.InputMismatchException;
+import java.util.regex.Pattern;
+
+
+public class IntegerString<T> implements Comparable<T> {
+
+    String i;
+    public IntegerString(String s) throws InputMismatchException{
+        if (!Pattern.compile("\\d*").matcher(s).matches()) {
+            throw new InputMismatchException("Input should contain only digits");
+        }
+        int j=0;
+        // Find first non-zero digit from left
+        while(j<s.length() && s.charAt(j)=='0') {
+            j++;
+        };
+        if (j==s.length()) {
+            // Number is 0
+            i="0";
+        } else if (j==0) {
+            // No leading Zeros
+            i = s;
+        } else {
+            // Some leading Zeros
+            i = s.substring(j);
+        }
+    }
+    @Override
+    public String toString() {
+        return i;
+    }
+
+    private byte getDigitValue(char c) {
+        return (byte)(c - '0');
+    }
+    public static void main(String[] args) {
+        System.out.println(new IntegerString("000055").toString());
+        System.out.println(new IntegerString("000").toString());
+        System.out.println(new IntegerString("355").toString());
+        System.out.println(new IntegerString("5").add(new IntegerString("3")).toString());
+        System.out.println(new IntegerString("").add(new IntegerString("98797987")).toString());
+    }
+
+    public IntegerString add(IntegerString rhs) {
+        int misMatch = this.toString().length()-rhs.toString().length();
+        char[] zeroes = new char[Math.abs(misMatch)];
+        Arrays.fill(zeroes, '0');
+        String arg1;
+        String arg2;
+        if (misMatch > 0) {
+            arg1 = this.toString();
+            arg2 = new String(zeroes).concat(rhs.toString());
+        } else if (misMatch < 0) {
+            arg1 = new String(zeroes).concat(this.toString());
+            arg2 = rhs.toString();
+        } else {
+            arg1 = this.toString();
+            arg2 = rhs.toString();
+        }
+        // Sum may result in an extra digit
+        char[] sum = new char[arg1.length()+1];
+        byte carry = 0;
+        for (int i=arg1.length()-1; i>=0; i--) {
+            byte currDigitSum = (byte)(getDigitValue(arg1.charAt(i)) + getDigitValue(arg2.charAt(i))+carry);
+            carry = (byte)(currDigitSum > 9 ? 1 : 0);
+            sum[i+1] = (char)(currDigitSum % 10 + '0');
+        }
+        sum[0] = (char)(carry + '0');
+        return new IntegerString(new String(sum));
+    }
+    @Override
+    public int compareTo(Object o) {
+
+        if (!(o instanceof IntegerString)) {
+            throw new InputMismatchException("Input should be IntegerString");
+        }
+        IntegerString rhs = (IntegerString)o;
+        if (this.toString() == rhs.toString()) {
+            return 0;
+        }
+        if (this.toString().length() < rhs.toString().length()) {
+            return -1;
+        }
+        if (this.toString().length() > rhs.toString().length()) {
+            return 1;
+        }
+
+        for (int i = 0; i<this.toString().length(); i++) {
+            if (this.toString().charAt(i) < rhs.toString().charAt(i)) {
+                return -1;
+            }
+            if (this.toString().charAt(i) > rhs.toString().charAt(i)) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+}
